@@ -1,20 +1,19 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2015-04-03T17:00:03
-#
-#-------------------------------------------------
-
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
+QT += xml network svg
 TARGET = GPiS
-TEMPLATE = app
+TEMPLATE = app 
 
+SOURCES += main.cpp \
+           mapwidget.cpp \
+           mainwindow.cpp
+           
+HEADERS += mapwidget.h \
+           mainwindow.h
 
-SOURCES += main.cpp\
-        mainwindow.cpp
+CONFIG += mobility
+MOBILITY = location
 
-HEADERS  += mainwindow.h
+equals(QT_MAJOR_VERSION, 4):lessThan(QT_MINOR_VERSION, 7){
+    MOBILITY += bearer
+    INCLUDEPATH += ../../src/bearer
+}
 
-FORMS    += mainwindow.ui

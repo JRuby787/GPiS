@@ -27,6 +27,9 @@
 *.out
 *.app
 
+# Swap files
+*.swp
+
 # Qt files
 *.user
 Makefile

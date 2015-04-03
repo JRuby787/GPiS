@@ -36,5 +36,7 @@ Makefile
 moc_*.cpp
 ui_*.h
 
-# Project executable
-GPiS
+# Project-specific
+bin/*
+moc/*
+obj/*

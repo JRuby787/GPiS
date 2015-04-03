@@ -2,18 +2,17 @@ QT += xml network svg
 TARGET = GPiS
 TEMPLATE = app 
 
-SOURCES += main.cpp \
-           mapwidget.cpp \
-           mainwindow.cpp
+DESTDIR = bin
+OBJECTS_DIR = obj
+MOC_DIR = moc
+
+SOURCES += src/main.cpp \
+           src/mapwidget.cpp \
+           src/mainwindow.cpp
            
-HEADERS += mapwidget.h \
-           mainwindow.h
+HEADERS += src/mapwidget.h \
+           src/mainwindow.h
 
 CONFIG += mobility
 MOBILITY = location
-
-equals(QT_MAJOR_VERSION, 4):lessThan(QT_MINOR_VERSION, 7){
-    MOBILITY += bearer
-    INCLUDEPATH += ../../src/bearer
-}
 

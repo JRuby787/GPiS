@@ -12,4 +12,6 @@ make
 
 To run:
 
+```
 bin/GPiS
+```

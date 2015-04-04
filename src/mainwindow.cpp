@@ -35,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // create a menu button
     m_menuButton = new QPushButton("Menu", this);
     m_menuButton->setVisible(true);
-    m_menuButton->move((width()-m_menuButton->width())/2,height()-m_menuButton->height());
 
     // Set Internet Access Point
     QNetworkConfigurationManager manager;
@@ -67,6 +66,8 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     m_qgv->setSceneRect(QRectF(QPointF(0.0, 0.0), m_qgv->size()));
     if (m_mapWidget)
         m_mapWidget->resize(m_qgv->size());
+
+    m_menuButton->move((width()-m_menuButton->width())/2,height()-m_menuButton->height());
 }
 
 void MainWindow::showEvent(QShowEvent* event)
@@ -132,7 +133,7 @@ void MainWindow::setProvider(QString providerId)
         delete m_serviceProvider;
     m_serviceProvider = new QGeoServiceProvider(providerId);
     if (m_serviceProvider->error() != QGeoServiceProvider::NoError) {
-        QMessageBox::information(this, tr("MapViewer Example"), tr(
+        QMessageBox::information(this, tr("GPiS"), tr(
                                      "Unable to find the %1 geoservices plugin.").arg(providerId));
         qApp->quit();
         return;

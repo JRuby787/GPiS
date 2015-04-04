@@ -7,6 +7,7 @@
 #include <QGraphicsView>
 #include <QGeoServiceProvider>
 #include <qnetworksession.h>
+#include <QPushButton>
 
 class QResizeEvent;
 class QShowEvent;
@@ -42,6 +43,8 @@ private:
     QGraphicsView* m_qgv;
 
     QNetworkSession *m_session;
+
+    QPushButton *m_menuButton;
 };
 
 #endif // MAINWINDOW_H

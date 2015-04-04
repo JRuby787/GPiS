@@ -20,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
         m_serviceProvider(0),
         m_mapWidget(0)
 {
-    setWindowTitle(tr("Hello Map"));
+    setWindowTitle(tr("GPiS")); 
+    resize(480,320);
 
     QGraphicsScene *sc = new QGraphicsScene;
 
@@ -31,6 +32,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setCentralWidget(m_qgv);
 
+    // create a menu button
+    m_menuButton = new QPushButton("Menu", this);
+    m_menuButton->setVisible(true);
+    m_menuButton->move((width()-m_menuButton->width())/2,height()-m_menuButton->height());
+
     // Set Internet Access Point
     QNetworkConfigurationManager manager;
     const bool canStartIAP = (manager.capabilities()
@@ -39,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Is there default access point, use it
     QNetworkConfiguration cfg = manager.defaultConfiguration();
     if (!cfg.isValid() || (!canStartIAP && cfg.state() != QNetworkConfiguration::Active)) {
-        QMessageBox::information(this, tr("Map Viewer Demo"), tr(
+        QMessageBox::information(this, tr("GPiS"), tr(
                                      "Available Access Points not found."));
         return;
     }
@@ -139,8 +145,8 @@ void MainWindow::setupMap()
 {
     m_mapWidget = new MapWidget(m_mapManager);
     m_qgv->scene()->addItem(m_mapWidget);
-    m_mapWidget->setCenter(QGeoCoordinate(52.5,13.0));
-    m_mapWidget->setZoomLevel(5);
+    m_mapWidget->setCenter(QGeoCoordinate(40.744454,-74.025798));
+    m_mapWidget->setZoomLevel(15); // valid levels: 0 (min) to 18 (max)
 
     resizeEvent(0);
 }

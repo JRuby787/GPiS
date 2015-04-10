@@ -32,6 +32,7 @@ private:
     void showMenu();
     void closeMenu();
     void saveCurrentPosition();
+    void drawSavedPositions();
 
 private slots:
     void networkSessionOpened();

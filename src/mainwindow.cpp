@@ -15,6 +15,11 @@
 #include <QPixmap>
 #include <QIcon>
 #include <QSize>
+#include <QGeoBoundingBox>
+
+#include <iostream>
+using std::cout;
+using std::endl;
 
 #define WIN_W 480
 #define WIN_H 320
@@ -179,6 +184,8 @@ void MainWindow::setupMap()
     pinPixmap.load(":/map-pin.png");
     m_pinIndicator = m_qgv->scene()->addPixmap(pinPixmap);
 
+    drawSavedPositions();
+
     resizeEvent(0);
 }
 
@@ -211,6 +218,7 @@ void MainWindow::closeMenu()
 {
     // show the map QGraphicsView
     m_qgv->setVisible(true);
+    drawSavedPositions();
 
     // show the menu button
     m_menuButton->setVisible(true);
@@ -228,4 +236,29 @@ void MainWindow::saveButtonClicked()
 void MainWindow::saveCurrentPosition()
 {
     m_placesList.push_back(m_mapWidget->center());
+}
+
+void MainWindow::drawSavedPositions()
+{
+    // TODO: figure out what to do if this is called multiple times
+    // I think we should probably remove all of the markers and re-draw them
+    // since this function should get called every time the map is redrawn (i.e. when location changes)
+
+    cout << "Draw saved positions" << endl;
+
+    QGeoBoundingBox mapArea = m_mapWidget->viewport();
+
+    for(
+       std::list<QGeoCoordinate>::iterator placeIter = m_placesList.begin();
+       placeIter != m_placesList.end();
+       ++placeIter)
+    {
+        cout << "Place in list: " << placeIter->toString(QGeoCoordinate::Degrees).toStdString() << endl;
+        if (mapArea.contains(*placeIter))
+            cout << "Place is in view!" << endl;
+            // TODO: place a marker at this coordinate
+        else
+            cout << "Place is NOT in view!" << endl;
+            // TODO: nothing
+    }
 }

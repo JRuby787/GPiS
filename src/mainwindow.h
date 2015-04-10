@@ -33,6 +33,7 @@ private:
     void closeMenu();
     void saveCurrentPosition();
     void drawSavedPositions();
+    void drawIndicator(QGeoCoordinate coord);
 
 private slots:
     void networkSessionOpened();
@@ -59,6 +60,7 @@ private:
     QGraphicsPixmapItem *m_pinIndicator;
 
     std::list<QGeoCoordinate> m_placesList;
+    std::list<QGraphicsPixmapItem*> m_placeIndicatorList;
 };
 
 #endif // MAINWINDOW_H

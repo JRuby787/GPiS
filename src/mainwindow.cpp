@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // create a menu button
     m_menuButton = new QPushButton("Menu", this);
+    m_menuButton->move((width()-m_menuButton->width())/2, height()-m_menuButton->height());
     m_menuButton->setVisible(true);
     connect(m_menuButton, SIGNAL(clicked()), this, SLOT(menuButtonClicked()));
 
@@ -100,9 +101,6 @@ void MainWindow::showEvent(QShowEvent* event)
     m_qgv->setSceneRect(QRectF(QPointF(0.0, 0.0), m_qgv->size()));
     if (m_mapWidget)
         m_mapWidget->resize(m_qgv->size());
-
-    m_menuButton->move((width()-m_menuButton->width())/2, height()-m_menuButton->height());
-    m_pinIndicator->setOffset(width()/2-10, height()/2-32);
 }
 
 void MainWindow::networkSessionOpened()
@@ -176,13 +174,14 @@ void MainWindow::setupMap()
 {
     m_mapWidget = new MapWidget(m_mapManager);
     m_qgv->scene()->addItem(m_mapWidget);
-    m_mapWidget->setCenter(QGeoCoordinate(40.744454,-74.025798));
+    m_mapWidget->setCenter(QGeoCoordinate(40.74445,-74.02580));
     m_mapWidget->setZoomLevel(15); // valid levels: 0 (min) to 18 (max)
 
     // create a pixmap for the current location indicator
     QPixmap pinPixmap;
-    pinPixmap.load(":/map-pin.png");
+    pinPixmap.load(":/map-pin-blue.png");
     m_pinIndicator = m_qgv->scene()->addPixmap(pinPixmap);
+    m_pinIndicator->setOffset(width()/2-10, height()/2-32);
 
     drawSavedPositions();
 
@@ -193,6 +192,10 @@ void MainWindow::menuButtonClicked()
 {
     // show the menu
     showMenu();
+
+    //TODO: temp only
+    m_placesList.push_back(QGeoCoordinate(40.74193,-74.03338)); // HUMC
+    m_placesList.push_back(QGeoCoordinate(40.75334,-74.02894)); // Malibu Diner
 }
 
 void MainWindow::showMenu()
@@ -248,17 +251,25 @@ void MainWindow::drawSavedPositions()
 
     QGeoBoundingBox mapArea = m_mapWidget->viewport();
 
-    for(
-       std::list<QGeoCoordinate>::iterator placeIter = m_placesList.begin();
-       placeIter != m_placesList.end();
-       ++placeIter)
+    for (std::list<QGeoCoordinate>::iterator placeIter = m_placesList.begin();
+         placeIter != m_placesList.end();
+         ++placeIter)
     {
         cout << "Place in list: " << placeIter->toString(QGeoCoordinate::Degrees).toStdString() << endl;
         if (mapArea.contains(*placeIter))
-            cout << "Place is in view!" << endl;
-            // TODO: place a marker at this coordinate
-        else
-            cout << "Place is NOT in view!" << endl;
-            // TODO: nothing
+        {
+            drawIndicator(*placeIter);
+        }
     }
+}
+
+void MainWindow::drawIndicator(QGeoCoordinate coord)
+{
+    // create a pixmap for the current location indicator
+    QPixmap pinPixmap;
+    pinPixmap.load(":/map-pin-green.png");
+    QGraphicsPixmapItem *pinIndicator = m_qgv->scene()->addPixmap(pinPixmap);
+    QPointF point = m_mapWidget->coordinateToScreenPosition(coord);
+    pinIndicator->setOffset(point.x()-10, point.y()-32);
+    m_placeIndicatorList.push_back(pinIndicator);
 }

@@ -1,6 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file>map-pin.png</file>
+    <file>map-pin-blue.png</file>
+    <file>map-pin-green.png</file>
     <file>save-icon.png</file>
     <file>map-icon.png</file>
 </qresource>

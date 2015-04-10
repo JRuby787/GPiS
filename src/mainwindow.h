@@ -31,12 +31,14 @@ private:
     void setProvider(QString providerId);
     void showMenu();
     void closeMenu();
+    void saveCurrentPosition();
 
 private slots:
     void networkSessionOpened();
     void error(QNetworkSession::SessionError error);
     void menuButtonClicked();
     void mapButtonClicked();
+    void saveButtonClicked();
 
 private:
     QGeoServiceProvider *m_serviceProvider;
@@ -54,6 +56,8 @@ private:
     QPushButton *m_mapButton;
 
     QGraphicsPixmapItem *m_pinIndicator;
+
+    std::list<QGeoCoordinate> m_placesList;
 };
 
 #endif // MAINWINDOW_H

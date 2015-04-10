@@ -28,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     // set main window properties
     setWindowTitle(tr("GPiS")); 
-    //resize(480,320);
     setFixedSize(WIN_W, WIN_H);
 
     // create a scene to display graphics objects for the map view
@@ -45,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_menuButton, SIGNAL(clicked()), this, SLOT(menuButtonClicked()));
 
     // create the buttons for the main menu
+    // save current position button
     m_savePosButton = new QPushButton(this);
     m_savePosButton->setVisible(false); 
     m_savePosButton->resize(80, 80); 
@@ -53,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_savePosButton->setIcon(QIcon(savePixmap));
     m_savePosButton->setIconSize(QSize(60, 60));
     m_savePosButton->move(width()/2, height()/6);
+    connect(m_savePosButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()));
+    // return to map view button
     m_mapButton = new QPushButton(this);
     m_mapButton->setVisible(false); 
     m_mapButton->resize(80, 80); 
@@ -216,4 +218,14 @@ void MainWindow::closeMenu()
     // hide the menu
     m_savePosButton->setVisible(false); 
     m_mapButton->setVisible(false); 
+}
+
+void MainWindow::saveButtonClicked()
+{
+    saveCurrentPosition();
+}
+
+void MainWindow::saveCurrentPosition()
+{
+    m_placesList.push_back(m_mapWidget->center());
 }

@@ -35,8 +35,10 @@
 Makefile
 moc_*.cpp
 ui_*.h
+qrc_*.cpp
 
 # Project-specific
 bin/*
 moc/*
 obj/*
+qrc/*

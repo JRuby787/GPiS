@@ -12,6 +12,11 @@
 #include <QAction>
 #include <QMenuBar>
 #include <qnetworkconfigmanager.h>
+#include <QPixmap>
+
+#include <iostream>
+using std::cout;
+using std::endl;
 
 QTM_USE_NAMESPACE
 
@@ -20,28 +25,29 @@ MainWindow::MainWindow(QWidget *parent) :
         m_serviceProvider(0),
         m_mapWidget(0)
 {
+    // set main window properties
     setWindowTitle(tr("GPiS")); 
     resize(480,320);
 
+    // create a scene to display graphics objects
     QGraphicsScene *sc = new QGraphicsScene;
-
     m_qgv = new QGraphicsView(sc, this);
     m_qgv->setVisible(true);
     m_qgv->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_qgv->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
     setCentralWidget(m_qgv);
 
     // create a menu button
     m_menuButton = new QPushButton("Menu", this);
     m_menuButton->setVisible(true);
+    connect(m_menuButton, SIGNAL(clicked()), this, SLOT(menuButtonClicked()));
 
-    // Set Internet Access Point
+    // set Internet Access Point
     QNetworkConfigurationManager manager;
     const bool canStartIAP = (manager.capabilities()
                               & QNetworkConfigurationManager::CanStartAndStopInterfaces);
 
-    // Is there default access point, use it
+    // if there default access point, use it
     QNetworkConfiguration cfg = manager.defaultConfiguration();
     if (!cfg.isValid() || (!canStartIAP && cfg.state() != QNetworkConfiguration::Active)) {
         QMessageBox::information(this, tr("GPiS"), tr(
@@ -49,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
         return;
     }
 
-    //set callbacks and start internet connection
+    // set callbacks and start internet connection
     m_session = new QNetworkSession(cfg, this);
     connect(m_session, SIGNAL(opened()), this, SLOT(networkSessionOpened()));
     connect(m_session,SIGNAL(error(QNetworkSession::SessionError)),this,SLOT(error(QNetworkSession::SessionError)));
@@ -67,7 +73,8 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     if (m_mapWidget)
         m_mapWidget->resize(m_qgv->size());
 
-    m_menuButton->move((width()-m_menuButton->width())/2,height()-m_menuButton->height());
+    m_menuButton->move((width()-m_menuButton->width())/2, height()-m_menuButton->height());
+    m_pinIndicator->setOffset(width()/2-10, height()/2-32);
 }
 
 void MainWindow::showEvent(QShowEvent* event)
@@ -88,9 +95,9 @@ void MainWindow::networkSessionOpened()
     } else
         QNetworkProxyFactory::setUseSystemConfiguration(true);
 
-    //get provider, we are hardcoding it to nokia
+    // get provider, we are hardcoding it to nokia
     setProvider("nokia");
-    //set up the map widget
+    // set up the map widget
     setupMap();
 }
 
@@ -149,5 +156,16 @@ void MainWindow::setupMap()
     m_mapWidget->setCenter(QGeoCoordinate(40.744454,-74.025798));
     m_mapWidget->setZoomLevel(15); // valid levels: 0 (min) to 18 (max)
 
+    // create a pixmap for the current location indicator
+    QPixmap pinPixmap;
+    pinPixmap.load(":/map-pin.png");
+    m_pinIndicator = m_qgv->scene()->addPixmap(pinPixmap);
+
     resizeEvent(0);
+}
+
+void MainWindow::menuButtonClicked()
+{
+    cout << "Menu button clicked" << endl;
+    m_qgv->setVisible(false);
 }

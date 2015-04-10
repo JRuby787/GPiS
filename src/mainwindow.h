@@ -8,6 +8,7 @@
 #include <QGeoServiceProvider>
 #include <qnetworksession.h>
 #include <QPushButton>
+#include <QGraphicsPixmapItem>
 
 class QResizeEvent;
 class QShowEvent;
@@ -33,6 +34,7 @@ private:
 private slots:
     void networkSessionOpened();
     void error(QNetworkSession::SessionError error);
+    void menuButtonClicked();
 
 private:
     QGeoServiceProvider *m_serviceProvider;
@@ -45,6 +47,8 @@ private:
     QNetworkSession *m_session;
 
     QPushButton *m_menuButton;
+
+    QGraphicsPixmapItem *m_pinIndicator;
 };
 
 #endif // MAINWINDOW_H

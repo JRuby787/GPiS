@@ -13,10 +13,11 @@
 #include <QMenuBar>
 #include <qnetworkconfigmanager.h>
 #include <QPixmap>
+#include <QIcon>
+#include <QSize>
 
-#include <iostream>
-using std::cout;
-using std::endl;
+#define WIN_W 480
+#define WIN_H 320
 
 QTM_USE_NAMESPACE
 
@@ -27,9 +28,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     // set main window properties
     setWindowTitle(tr("GPiS")); 
-    resize(480,320);
+    //resize(480,320);
+    setFixedSize(WIN_W, WIN_H);
 
-    // create a scene to display graphics objects
+    // create a scene to display graphics objects for the map view
     QGraphicsScene *sc = new QGraphicsScene;
     m_qgv = new QGraphicsView(sc, this);
     m_qgv->setVisible(true);
@@ -41,6 +43,25 @@ MainWindow::MainWindow(QWidget *parent) :
     m_menuButton = new QPushButton("Menu", this);
     m_menuButton->setVisible(true);
     connect(m_menuButton, SIGNAL(clicked()), this, SLOT(menuButtonClicked()));
+
+    // create the buttons for the main menu
+    m_savePosButton = new QPushButton(this);
+    m_savePosButton->setVisible(false); 
+    m_savePosButton->resize(80, 80); 
+    QPixmap savePixmap;
+    savePixmap.load(":/save-icon.png");
+    m_savePosButton->setIcon(QIcon(savePixmap));
+    m_savePosButton->setIconSize(QSize(60, 60));
+    m_savePosButton->move(width()/2, height()/6);
+    m_mapButton = new QPushButton(this);
+    m_mapButton->setVisible(false); 
+    m_mapButton->resize(80, 80); 
+    QPixmap mapPixmap;
+    mapPixmap.load(":/map-icon.png");
+    m_mapButton->setIcon(QIcon(mapPixmap));
+    m_mapButton->setIconSize(QSize(60, 60));
+    m_mapButton->move(width()/6, height()/6);
+    connect(m_mapButton, SIGNAL(clicked()), this, SLOT(mapButtonClicked()));
 
     // set Internet Access Point
     QNetworkConfigurationManager manager;
@@ -67,7 +88,7 @@ MainWindow::~MainWindow()
     delete m_serviceProvider;
 }
 
-void MainWindow::resizeEvent(QResizeEvent* event)
+void MainWindow::showEvent(QShowEvent* event)
 {
     m_qgv->setSceneRect(QRectF(QPointF(0.0, 0.0), m_qgv->size()));
     if (m_mapWidget)
@@ -75,11 +96,6 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
     m_menuButton->move((width()-m_menuButton->width())/2, height()-m_menuButton->height());
     m_pinIndicator->setOffset(width()/2-10, height()/2-32);
-}
-
-void MainWindow::showEvent(QShowEvent* event)
-{
-    resizeEvent(0);
 }
 
 void MainWindow::networkSessionOpened()
@@ -166,6 +182,38 @@ void MainWindow::setupMap()
 
 void MainWindow::menuButtonClicked()
 {
-    cout << "Menu button clicked" << endl;
+    // show the menu
+    showMenu();
+}
+
+void MainWindow::showMenu()
+{
+    // hide the map QGraphicsView
     m_qgv->setVisible(false);
+
+    // hide the menu button
+    m_menuButton->setVisible(false);
+
+    // show the menu
+    m_savePosButton->setVisible(true); 
+    m_mapButton->setVisible(true); 
+}
+
+void MainWindow::mapButtonClicked()
+{
+   // return to the map
+   closeMenu(); 
+}
+
+void MainWindow::closeMenu()
+{
+    // show the map QGraphicsView
+    m_qgv->setVisible(true);
+
+    // show the menu button
+    m_menuButton->setVisible(true);
+
+    // hide the menu
+    m_savePosButton->setVisible(false); 
+    m_mapButton->setVisible(false); 
 }

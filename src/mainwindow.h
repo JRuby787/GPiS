@@ -24,17 +24,19 @@ public:
     ~MainWindow();
 
 protected:
-    void resizeEvent(QResizeEvent* event);
     void showEvent(QShowEvent *);
 
 private:
     void setupMap();
     void setProvider(QString providerId);
+    void showMenu();
+    void closeMenu();
 
 private slots:
     void networkSessionOpened();
     void error(QNetworkSession::SessionError error);
     void menuButtonClicked();
+    void mapButtonClicked();
 
 private:
     QGeoServiceProvider *m_serviceProvider;
@@ -47,6 +49,9 @@ private:
     QNetworkSession *m_session;
 
     QPushButton *m_menuButton;
+
+    QPushButton *m_savePosButton;
+    QPushButton *m_mapButton;
 
     QGraphicsPixmapItem *m_pinIndicator;
 };

@@ -242,8 +242,6 @@ void MainWindow::drawSavedPositions()
 {
     clearIndicators();
 
-    cout << "Draw saved positions" << endl;
-
     QGeoBoundingBox mapArea = m_mapWidget->viewport();
 
     for (std::list<QGeoCoordinate>::iterator placeIter = m_placesList.begin();

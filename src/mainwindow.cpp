@@ -17,6 +17,8 @@
 #include <QSize>
 #include <QGeoBoundingBox>
 
+#include "positionsource.h"
+
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -89,6 +91,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_session, SIGNAL(opened()), this, SLOT(networkSessionOpened()));
     connect(m_session,SIGNAL(error(QNetworkSession::SessionError)),this,SLOT(error(QNetworkSession::SessionError)));
     m_session->open();
+
+    // create new position source and start position updates
+    m_positionSource = new PositionSource(this);
+    connect(m_positionSource, SIGNAL(positionUpdated(QGeoPositionInfo)), this, SLOT(positionUpdated(QGeoPositionInfo)));
+    m_positionSource->startUpdates();
 }
 
 MainWindow::~MainWindow()
@@ -282,4 +289,9 @@ void MainWindow::clearIndicators()
 void MainWindow::mapCenterChanged()
 {
     drawSavedPositions();
+}
+
+void MainWindow::positionUpdated(const QGeoPositionInfo &info)
+{
+    cout << "Position updated: Date/time = " << info.timestamp().toString() << " Coordinate = " << info.coordinate().toString() << endl;
 }

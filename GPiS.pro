@@ -9,10 +9,12 @@ RCC_DIR = qrc
 
 SOURCES += src/main.cpp \
            src/mapwidget.cpp \
-           src/mainwindow.cpp
+           src/mainwindow.cpp \
+           src/positionsource.cpp
            
 HEADERS += src/mapwidget.h \
-           src/mainwindow.h
+           src/mainwindow.h \
+           src/positionsource.h
 
 RESOURCES = rsrc/resources.qrc
 

@@ -10,6 +10,8 @@
 #include <QPushButton>
 #include <QGraphicsPixmapItem>
 
+#include "positionsource.h"
+
 class QResizeEvent;
 class QShowEvent;
 
@@ -43,6 +45,7 @@ private slots:
     void mapButtonClicked();
     void saveButtonClicked();
     void mapCenterChanged();
+    void positionUpdated(const QGeoPositionInfo &info);
 
 private:
     QGeoServiceProvider *m_serviceProvider;
@@ -63,6 +66,8 @@ private:
 
     std::list<QGeoCoordinate> m_placesList;
     std::list<QGraphicsPixmapItem*> m_placeIndicatorList;
+
+    PositionSource *m_positionSource;
 };
 
 #endif // MAINWINDOW_H

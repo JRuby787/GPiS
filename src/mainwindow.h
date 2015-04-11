@@ -34,6 +34,7 @@ private:
     void saveCurrentPosition();
     void drawSavedPositions();
     void drawIndicator(QGeoCoordinate coord);
+    void clearIndicators();
 
 private slots:
     void networkSessionOpened();
@@ -41,6 +42,7 @@ private slots:
     void menuButtonClicked();
     void mapButtonClicked();
     void saveButtonClicked();
+    void mapCenterChanged();
 
 private:
     QGeoServiceProvider *m_serviceProvider;

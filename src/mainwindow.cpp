@@ -176,6 +176,7 @@ void MainWindow::setupMap()
     m_qgv->scene()->addItem(m_mapWidget);
     m_mapWidget->setCenter(QGeoCoordinate(40.74445,-74.02580));
     m_mapWidget->setZoomLevel(15); // valid levels: 0 (min) to 18 (max)
+    connect(m_mapWidget, SIGNAL(centerChanged(const QGeoCoordinate)), this, SLOT(mapCenterChanged()));
 
     // create a pixmap for the current location indicator
     QPixmap pinPixmap;
@@ -192,10 +193,6 @@ void MainWindow::menuButtonClicked()
 {
     // show the menu
     showMenu();
-
-    //TODO: temp only
-    m_placesList.push_back(QGeoCoordinate(40.74193,-74.03338)); // HUMC
-    m_placesList.push_back(QGeoCoordinate(40.75334,-74.02894)); // Malibu Diner
 }
 
 void MainWindow::showMenu()
@@ -243,9 +240,7 @@ void MainWindow::saveCurrentPosition()
 
 void MainWindow::drawSavedPositions()
 {
-    // TODO: figure out what to do if this is called multiple times
-    // I think we should probably remove all of the markers and re-draw them
-    // since this function should get called every time the map is redrawn (i.e. when location changes)
+    clearIndicators();
 
     cout << "Draw saved positions" << endl;
 
@@ -255,7 +250,6 @@ void MainWindow::drawSavedPositions()
          placeIter != m_placesList.end();
          ++placeIter)
     {
-        cout << "Place in list: " << placeIter->toString(QGeoCoordinate::Degrees).toStdString() << endl;
         if (mapArea.contains(*placeIter))
         {
             drawIndicator(*placeIter);
@@ -272,4 +266,22 @@ void MainWindow::drawIndicator(QGeoCoordinate coord)
     QPointF point = m_mapWidget->coordinateToScreenPosition(coord);
     pinIndicator->setOffset(point.x()-10, point.y()-32);
     m_placeIndicatorList.push_back(pinIndicator);
+}
+
+void MainWindow::clearIndicators()
+{
+    QGraphicsPixmapItem *pItem;
+
+    while (!m_placeIndicatorList.empty())
+    {
+        pItem = m_placeIndicatorList.front();
+        m_placeIndicatorList.pop_front();
+        m_qgv->scene()->removeItem(pItem);
+        delete pItem;
+    }
+}
+
+void MainWindow::mapCenterChanged()
+{
+    drawSavedPositions();
 }

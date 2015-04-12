@@ -10,7 +10,7 @@ PositionSource::PositionSource(QObject *parent)
     connect(timer, SIGNAL(timeout()), this, SLOT(readNextPosition()));
 
     logFile->setFileName(QCoreApplication::applicationDirPath()
-            + QDir::separator() + "simplelog.txt");
+            + QDir::separator() + ".." + QDir::separator() + "locations.txt");
     if (!logFile->open(QIODevice::ReadOnly))
         qWarning() << "Error: cannot open source file" << logFile->fileName();
 }

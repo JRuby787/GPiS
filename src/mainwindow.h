@@ -37,6 +37,7 @@ private:
     void drawSavedPositions();
     void drawIndicator(QGeoCoordinate coord);
     void clearIndicators();
+    double mpsToMPH(double mps);
 
 private slots:
     void networkSessionOpened();

@@ -1,5 +1,7 @@
 #include <QtCore>
 
+#include <math.h>
+
 #include "positionsource.h"
 
 PositionSource::PositionSource(QObject *parent)
@@ -70,11 +72,41 @@ void PositionSource::readNextPosition()
         if (hasLatitude && hasLongitude && timestamp.isValid()) {
             QGeoCoordinate coordinate(latitude, longitude);
             QGeoPositionInfo info(coordinate, timestamp);
+	    info.setAttribute(QGeoPositionInfo::GroundSpeed, getGroundSpeed(info));
             if (info.isValid()) {
                 lastPosition = info;
                 emit positionUpdated(info);
             }
         }
     }
+}
+
+double PositionSource::degToRad(double deg)
+{
+    return deg * M_PI / 180;
+}
+
+double PositionSource::haversin(double angle)
+{
+    return sin(angle/2) * sin(angle/2);
+}
+
+double PositionSource::getGroundSpeed(QGeoPositionInfo &info)
+{
+    // based on the haversine formula: http://en.wikipedia.org/wiki/Haversine_formula 
+    double lat2_rad = degToRad(info.coordinate().latitude());
+    double long2_rad = degToRad(info.coordinate().longitude());
+    double lat1_rad = degToRad(lastPosition.coordinate().latitude());
+    double long1_rad = degToRad(lastPosition.coordinate().longitude());
+
+    double h = haversin(lat2_rad - lat1_rad) + cos(lat1_rad) * cos(lat2_rad) * haversin(long2_rad - long1_rad);
+
+    // radius of Earth = 6371000 meters
+    double d = 2 * 6371000 * asin(sqrt(h));
+
+    unsigned int time2 = info.timestamp().toTime_t(); // seconds since 1970-01-01T00:00:00 UTC
+    unsigned int time1 = lastPosition.timestamp().toTime_t(); // seconds since 1970-01-01T00:00:00 UTC
+
+    return d/(time2-time1); // m/s
 }
 

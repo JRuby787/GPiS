@@ -29,6 +29,9 @@ private slots:
     void readNextPosition();
 
 private:
+    double degToRad(double deg);
+    double getGroundSpeed(QGeoPositionInfo &info);
+    double haversin(double angle);
     QFile *logFile;
     QTimer *timer;
     QGeoPositionInfo lastPosition;

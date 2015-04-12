@@ -95,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // create new position source and start position updates
     m_positionSource = new PositionSource(this);
     connect(m_positionSource, SIGNAL(positionUpdated(QGeoPositionInfo)), this, SLOT(positionUpdated(QGeoPositionInfo)));
-    m_positionSource->setUpdateInterval(1000);
+    m_positionSource->setUpdateInterval(5000);
     m_positionSource->startUpdates();
 }
 
@@ -296,4 +296,12 @@ void MainWindow::positionUpdated(const QGeoPositionInfo &info)
 {
     cout << "Position updated: Date/time = " << info.timestamp().toString().toStdString() << " Coordinate = " << info.coordinate().toString().toStdString() << endl;
     m_mapWidget->setCenter(info.coordinate());
+    cout << "Ground speed: " << mpsToMPH(info.attribute(QGeoPositionInfo::GroundSpeed)) << " miles/hour" << endl;
+}
+
+double MainWindow::mpsToMPH(double mps)
+{
+    // (x meter/sec) * (60 sec/min) * (60 min/hr) * (1 mile/1609.34 meter)
+    // 1 m/s = 2.23694 mi/hr
+    return mps * 2.23694;
 }

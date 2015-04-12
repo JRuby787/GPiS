@@ -1,2 +1,6 @@
 Qt Location API (also creating custom location class)
 http://doc.qt.digia.com/qtmobility/location-overview.html
+
+Converting lat/long to distance
+http://www.movable-type.co.uk/scripts/latlong.html
+http://en.wikipedia.org/wiki/Haversine_formula

@@ -1,6 +1,16 @@
+Qt 4.8 documentation
+http://doc.qt.io/qt-4.8/index.html
+http://doc.qt.io/qt-4.8/classes.html
+
+Qt Mobility documentation
+http://doc.qt.digia.com/qtmobility-1.2/index.html
+
 Qt Location API (also creating custom location class)
 http://doc.qt.digia.com/qtmobility/location-overview.html
 
 Converting lat/long to distance
 http://www.movable-type.co.uk/scripts/latlong.html
 http://en.wikipedia.org/wiki/Haversine_formula
+
+Lat/long map picker
+http://www.tytai.com/gmap/

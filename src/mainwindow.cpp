@@ -51,6 +51,14 @@ MainWindow::MainWindow(QWidget *parent) :
     m_menuButton->setVisible(true);
     connect(m_menuButton, SIGNAL(clicked()), this, SLOT(menuButtonClicked()));
 
+    // create label for speed indicator
+    m_speedLabel = new QLabel(this);
+    m_speedLabel->resize(m_menuButton->size());
+    m_speedLabel->move(width()-m_speedLabel->width(), height()-m_speedLabel->height());
+    m_speedLabel->setAlignment(Qt::AlignCenter);
+    m_speedLabel->setText("<b>0.0 MPH</b>");
+    m_speedLabel->setAutoFillBackground(true);
+
     // create the buttons for the main menu
     // save current position button
     m_savePosButton = new QPushButton(this);
@@ -211,6 +219,9 @@ void MainWindow::showMenu()
     // hide the menu button
     m_menuButton->setVisible(false);
 
+    // hide the speed indicator
+    m_speedLabel->setVisible(false);
+
     // show the menu
     m_savePosButton->setVisible(true); 
     m_mapButton->setVisible(true); 
@@ -230,6 +241,9 @@ void MainWindow::closeMenu()
 
     // show the menu button
     m_menuButton->setVisible(true);
+    
+    // show the speed indicator
+    m_speedLabel->setVisible(true);
 
     // hide the menu
     m_savePosButton->setVisible(false); 
@@ -294,14 +308,15 @@ void MainWindow::mapCenterChanged()
 
 void MainWindow::positionUpdated(const QGeoPositionInfo &info)
 {
-    cout << "Position updated: Date/time = " << info.timestamp().toString().toStdString() << " Coordinate = " << info.coordinate().toString().toStdString() << endl;
     m_mapWidget->setCenter(info.coordinate());
-    cout << "Ground speed: " << mpsToMPH(info.attribute(QGeoPositionInfo::GroundSpeed)) << " miles/hour" << endl;
+    if (info.hasAttribute(QGeoPositionInfo::GroundSpeed))
+    {
+        m_speedLabel->setText("<b>" + QString::number(mpsToMPH(info.attribute(QGeoPositionInfo::GroundSpeed)), 'f', 1) + " MPH</b>");
+    }
 }
 
 double MainWindow::mpsToMPH(double mps)
 {
-    // (x meter/sec) * (60 sec/min) * (60 min/hr) * (1 mile/1609.34 meter)
-    // 1 m/s = 2.23694 mi/hr
+    // (x meter/sec) * (60 sec/min) * (60 min/hr) * (1 mile/1609.34 meter) => 1 m/s = 2.23694 mi/hr
     return mps * 2.23694;
 }

@@ -9,6 +9,7 @@
 #include <qnetworksession.h>
 #include <QPushButton>
 #include <QGraphicsPixmapItem>
+#include <QLabel>
 
 #include "positionsource.h"
 
@@ -64,6 +65,8 @@ private:
     QPushButton *m_mapButton;
 
     QGraphicsPixmapItem *m_pinIndicator;
+
+    QLabel *m_speedLabel;
 
     std::list<QGeoCoordinate> m_placesList;
     std::list<QGraphicsPixmapItem*> m_placeIndicatorList;

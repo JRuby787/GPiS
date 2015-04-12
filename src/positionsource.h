@@ -35,6 +35,7 @@ private:
     QFile *logFile;
     QTimer *timer;
     QGeoPositionInfo lastPosition;
+    bool lastPositionValid;
 };
 
 #endif

@@ -7,7 +7,8 @@
 PositionSource::PositionSource(QObject *parent)
     : QGeoPositionInfoSource(parent),
       logFile(new QFile(this)),
-      timer(new QTimer(this))
+      timer(new QTimer(this)),
+      lastPositionValid(false)
 {
     connect(timer, SIGNAL(timeout()), this, SLOT(readNextPosition()));
 
@@ -72,9 +73,13 @@ void PositionSource::readNextPosition()
         if (hasLatitude && hasLongitude && timestamp.isValid()) {
             QGeoCoordinate coordinate(latitude, longitude);
             QGeoPositionInfo info(coordinate, timestamp);
-	    info.setAttribute(QGeoPositionInfo::GroundSpeed, getGroundSpeed(info));
+	    if (lastPositionValid)
+            {
+                info.setAttribute(QGeoPositionInfo::GroundSpeed, getGroundSpeed(info));
+            }
             if (info.isValid()) {
                 lastPosition = info;
+		lastPositionValid = true;
                 emit positionUpdated(info);
             }
         }

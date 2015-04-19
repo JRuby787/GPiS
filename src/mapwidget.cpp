@@ -17,6 +17,7 @@ void MapWidget::mousePressEvent(QGraphicsSceneMouseEvent* event)
     setFocus();
     if (event->button() == Qt::LeftButton) {
         m_panActive = true;
+        emit mapPanMode();
     }
 
     event->accept();

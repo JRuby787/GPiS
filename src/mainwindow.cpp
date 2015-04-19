@@ -31,7 +31,10 @@ QTM_USE_NAMESPACE
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         m_serviceProvider(0),
-        m_mapWidget(0)
+        m_mapWidget(0),
+        m_currLocPinItem(0),
+        m_currPositionValid(false),
+        m_panMode(false)
 {
     // set main window properties
     setWindowTitle(tr("GPiS")); 
@@ -51,6 +54,17 @@ MainWindow::MainWindow(QWidget *parent) :
     m_menuButton->setVisible(true);
     connect(m_menuButton, SIGNAL(clicked()), this, SLOT(menuButtonClicked()));
 
+    // create a "go to current location" button
+    m_goToButton = new QPushButton(this);
+    m_goToButton->resize(35, 35);
+    QPixmap goToPixmap;
+    goToPixmap.load(":/loc-icon.png");
+    m_goToButton->setIcon(QIcon(goToPixmap));
+    m_goToButton->setIconSize(QSize(35, 35));
+    m_goToButton->move(width()-m_goToButton->width(), 0);
+    m_goToButton->setVisible(true);
+    connect(m_goToButton, SIGNAL(clicked()), this, SLOT(goToButtonClicked()));
+
     // create label for speed indicator
     m_speedLabel = new QLabel(this);
     m_speedLabel->resize(m_menuButton->size());
@@ -58,6 +72,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_speedLabel->setAlignment(Qt::AlignCenter);
     m_speedLabel->setText("<b>0.0 MPH</b>");
     m_speedLabel->setAutoFillBackground(true);
+
+    // load the pixmaps for the position indicators
+    m_pinPixmap.load(":/map-pin-green.png");
+    m_currLocPinPixmap.load(":/map-pin-blue.png");
 
     // create the buttons for the main menu
     // save current position button
@@ -86,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
     const bool canStartIAP = (manager.capabilities()
                               & QNetworkConfigurationManager::CanStartAndStopInterfaces);
 
-    // if there default access point, use it
+    // if there is a default access point, use it
     QNetworkConfiguration cfg = manager.defaultConfiguration();
     if (!cfg.isValid() || (!canStartIAP && cfg.state() != QNetworkConfiguration::Active)) {
         QMessageBox::information(this, tr("GPiS"), tr(
@@ -193,12 +211,7 @@ void MainWindow::setupMap()
     m_mapWidget->setCenter(QGeoCoordinate(40.74445,-74.02580));
     m_mapWidget->setZoomLevel(15); // valid levels: 0 (min) to 18 (max)
     connect(m_mapWidget, SIGNAL(centerChanged(const QGeoCoordinate)), this, SLOT(mapCenterChanged()));
-
-    // create a pixmap for the current location indicator
-    QPixmap pinPixmap;
-    pinPixmap.load(":/map-pin-blue.png");
-    m_pinIndicator = m_qgv->scene()->addPixmap(pinPixmap);
-    m_pinIndicator->setOffset(width()/2-10, height()/2-32);
+    connect(m_mapWidget, SIGNAL(mapPanMode()), this, SLOT(setMapPanMode()));
 
     drawSavedPositions();
 
@@ -221,6 +234,9 @@ void MainWindow::showMenu()
 
     // hide the speed indicator
     m_speedLabel->setVisible(false);
+
+    // hide the go-to current location button
+    m_goToButton->setVisible(false);
 
     // show the menu
     m_savePosButton->setVisible(true); 
@@ -245,6 +261,9 @@ void MainWindow::closeMenu()
     // show the speed indicator
     m_speedLabel->setVisible(true);
 
+    // show the go-to current location button
+    m_goToButton->setVisible(true);
+
     // hide the menu
     m_savePosButton->setVisible(false); 
     m_mapButton->setVisible(false); 
@@ -255,6 +274,15 @@ void MainWindow::saveButtonClicked()
     saveCurrentPosition();
 }
 
+void MainWindow::goToButtonClicked()
+{
+    m_panMode = false;
+    if (m_currPositionValid)
+    {
+        m_mapWidget->setCenter(m_currPosition.coordinate());
+    }
+}
+
 void MainWindow::saveCurrentPosition()
 {
     m_placesList.push_back(m_mapWidget->center());
@@ -262,8 +290,6 @@ void MainWindow::saveCurrentPosition()
 
 void MainWindow::drawSavedPositions()
 {
-    clearIndicators();
-
     QGeoBoundingBox mapArea = m_mapWidget->viewport();
 
     for (std::list<QGeoCoordinate>::iterator placeIter = m_placesList.begin();
@@ -272,17 +298,15 @@ void MainWindow::drawSavedPositions()
     {
         if (mapArea.contains(*placeIter))
         {
-            drawIndicator(*placeIter);
+            drawSavedPosIndicator(*placeIter);
         }
     }
 }
 
-void MainWindow::drawIndicator(QGeoCoordinate coord)
+void MainWindow::drawSavedPosIndicator(QGeoCoordinate coord)
 {
-    // create a pixmap for the current location indicator
-    QPixmap pinPixmap;
-    pinPixmap.load(":/map-pin-green.png");
-    QGraphicsPixmapItem *pinIndicator = m_qgv->scene()->addPixmap(pinPixmap);
+    // draw the a saved location indicator
+    QGraphicsPixmapItem *pinIndicator = m_qgv->scene()->addPixmap(m_pinPixmap);
     QPointF point = m_mapWidget->coordinateToScreenPosition(coord);
     pinIndicator->setOffset(point.x()-10, point.y()-32);
     m_placeIndicatorList.push_back(pinIndicator);
@@ -303,12 +327,42 @@ void MainWindow::clearIndicators()
 
 void MainWindow::mapCenterChanged()
 {
+    clearIndicators();
     drawSavedPositions();
+    drawCurrLocIndicator();
+}
+
+void MainWindow::drawCurrLocIndicator()
+{
+    // re-draw the current location indicator
+    if (m_currLocPinItem)
+    {
+        m_qgv->scene()->removeItem(m_currLocPinItem);
+        delete m_currLocPinItem;
+        m_currLocPinItem = 0;
+    }
+    QGeoBoundingBox mapArea = m_mapWidget->viewport();
+    if (mapArea.contains(m_currPosition.coordinate()))
+    {
+        m_currLocPinItem = m_pinIndicator = m_qgv->scene()->addPixmap(m_currLocPinPixmap);
+        QPointF point = m_mapWidget->coordinateToScreenPosition(m_currPosition.coordinate());
+        m_pinIndicator->setOffset(point.x()-10, point.y()-32);
+    }
 }
 
 void MainWindow::positionUpdated(const QGeoPositionInfo &info)
 {
-    m_mapWidget->setCenter(info.coordinate());
+    m_currPosition = info;
+    m_currPositionValid = true;
+
+    if (!m_panMode)
+    {
+        m_mapWidget->setCenter(m_currPosition.coordinate());
+    }
+
+    drawCurrLocIndicator();
+    
+    // update the velocity
     if (info.hasAttribute(QGeoPositionInfo::GroundSpeed))
     {
         m_speedLabel->setText("<b>" + QString::number(mpsToMPH(info.attribute(QGeoPositionInfo::GroundSpeed)), 'f', 1) + " MPH</b>");
@@ -319,4 +373,9 @@ double MainWindow::mpsToMPH(double mps)
 {
     // (x meter/sec) * (60 sec/min) * (60 min/hr) * (1 mile/1609.34 meter) => 1 m/s = 2.23694 mi/hr
     return mps * 2.23694;
+}
+
+void MainWindow::setMapPanMode()
+{
+    m_panMode = true;
 }

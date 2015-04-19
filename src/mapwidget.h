@@ -11,6 +11,8 @@ class MapWidget : public QGraphicsGeoMap
 public:
     MapWidget(QGeoMappingManager *manager);
     ~MapWidget();
+signals:
+    void mapPanMode();
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);

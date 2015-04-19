@@ -36,7 +36,8 @@ private:
     void closeMenu();
     void saveCurrentPosition();
     void drawSavedPositions();
-    void drawIndicator(QGeoCoordinate coord);
+    void drawSavedPosIndicator(QGeoCoordinate coord);
+    void drawCurrLocIndicator();
     void clearIndicators();
     double mpsToMPH(double mps);
 
@@ -46,8 +47,10 @@ private slots:
     void menuButtonClicked();
     void mapButtonClicked();
     void saveButtonClicked();
+    void goToButtonClicked();
     void mapCenterChanged();
     void positionUpdated(const QGeoPositionInfo &info);
+    void setMapPanMode();
 
 private:
     QGeoServiceProvider *m_serviceProvider;
@@ -61,6 +64,8 @@ private:
 
     QPushButton *m_menuButton;
 
+    QPushButton *m_goToButton;
+
     QPushButton *m_savePosButton;
     QPushButton *m_mapButton;
 
@@ -72,6 +77,16 @@ private:
     std::list<QGraphicsPixmapItem*> m_placeIndicatorList;
 
     PositionSource *m_positionSource;
+
+    QPixmap m_pinPixmap;
+    QPixmap m_currLocPinPixmap;
+
+    QGraphicsPixmapItem *m_currLocPinItem;
+
+    QGeoPositionInfo m_currPosition;
+    bool m_currPositionValid;
+
+    bool m_panMode;
 };
 
 #endif // MAINWINDOW_H

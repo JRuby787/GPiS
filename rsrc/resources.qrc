@@ -4,5 +4,6 @@
     <file>map-pin-green.png</file>
     <file>save-icon.png</file>
     <file>map-icon.png</file>
+    <file>loc-icon.png</file>
 </qresource>
 </RCC>

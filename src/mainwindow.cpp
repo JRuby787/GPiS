@@ -19,10 +19,6 @@
 
 #include "positionsource.h"
 
-#include <iostream>
-using std::cout;
-using std::endl;
-
 #define WIN_W 480
 #define WIN_H 320
 
@@ -39,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // set main window properties
     setWindowTitle(tr("GPiS")); 
     setFixedSize(WIN_W, WIN_H);
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
     // create a scene to display graphics objects for the map view
     QGraphicsScene *sc = new QGraphicsScene;

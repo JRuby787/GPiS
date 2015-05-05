@@ -6,16 +6,15 @@
 
 PositionSource::PositionSource(QObject *parent)
     : QGeoPositionInfoSource(parent),
-      logFile(new QFile(this)),
       timer(new QTimer(this)),
-      lastPositionValid(false)
+      lastPositionValid(false),
+      gps_rec("localhost", DEFAULT_GPSD_PORT)
 {
     connect(timer, SIGNAL(timeout()), this, SLOT(readNextPosition()));
 
-    logFile->setFileName(QCoreApplication::applicationDirPath()
-            + QDir::separator() + ".." + QDir::separator() + "locations.txt");
-    if (!logFile->open(QIODevice::ReadOnly))
-        qWarning() << "Error: cannot open source file" << logFile->fileName();
+    if (gps_rec.stream(WATCH_ENABLE|WATCH_JSON) == NULL) {
+        qWarning()  << "No GPSD running.";
+    }
 }
 
 QGeoPositionInfo PositionSource::lastKnownPosition(bool /*fromSatellitePositioningMethodsOnly*/) const
@@ -49,39 +48,34 @@ void PositionSource::stopUpdates()
 
 void PositionSource::requestUpdate(int /*timeout*/)
 {
-    // For simplicity, ignore timeout - assume that if data is not available
-    // now, no data will be added to the file later
-    if (logFile->canReadLine())
-        readNextPosition();
-    else
-        emit updateTimeout();
+    readNextPosition();
 }
 
 void PositionSource::readNextPosition()
 {
-    QByteArray line = logFile->readLine().trimmed();
-    if (!line.isEmpty()) {
-        QList<QByteArray> data = line.split(' ');
-        double latitude;
-        double longitude;
-        bool hasLatitude = false;
-        bool hasLongitude = false;
-        QDateTime timestamp = QDateTime::fromString(QString(data.value(0)), Qt::ISODate);
-        latitude = data.value(1).toDouble(&hasLatitude);
-        longitude = data.value(2).toDouble(&hasLongitude);
+    if ((newData = gps_rec.read()) == NULL) {
+        qWarning()  << "gps read error.";
+        exit(1);
+    }
 
-        if (hasLatitude && hasLongitude && timestamp.isValid()) {
-            QGeoCoordinate coordinate(latitude, longitude);
-            QGeoPositionInfo info(coordinate, timestamp);
-            if (lastPositionValid)
-            {
-                info.setAttribute(QGeoPositionInfo::GroundSpeed, getGroundSpeed(info));
-            }
-            if (info.isValid()) {
-                lastPosition = info;
-                lastPositionValid = true;
-                emit positionUpdated(info);
-            }
+    if (newData->online) {
+
+        double latitude = newData->fix.latitude;
+        double longitude = newData->fix.longitude;
+
+        QDateTime timestamp = QDateTime::fromTime_t(newData->fix.time);
+        QGeoCoordinate coordinate(latitude, longitude);
+        QGeoPositionInfo info(coordinate, timestamp);
+        if (lastPositionValid)
+        {
+            //info.setAttribute(QGeoPositionInfo::GroundSpeed, getGroundSpeed(info));
+            info.setAttribute(QGeoPositionInfo::GroundSpeed, newData->fix.speed);
+            //cout << "DIRECTION = " << newData->fix.track << endl;
+        }
+        if (info.isValid()) {
+            lastPosition = info;
+            lastPositionValid = true;
+            emit positionUpdated(info);
         }
     }
 }

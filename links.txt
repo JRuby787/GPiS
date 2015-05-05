@@ -12,5 +12,23 @@ Converting lat/long to distance
 http://www.movable-type.co.uk/scripts/latlong.html
 http://en.wikipedia.org/wiki/Haversine_formula
 
+Converting Unix time to QDateTime
+http://www.qtcentre.org/threads/10157-How-to-convert-unix-time-to-QDateTime
+
 Lat/long map picker
 http://www.tytai.com/gmap/
+
+gpsd
+http://catb.org/gpsd/client-howto.html
+http://catb.org/gpsd/libgpsd.html
+https://fossies.org/dox/gpsd-3.14/gps_8h_source.html#l00068
+https://fossies.org/dox/gpsd-3.14/libgpsmm_8cpp_source.html#l00049
+https://fossies.org/dox/gpsd-3.14/libgpsmm_8h_source.html
+https://fossies.org/dox/gpsd-3.14/gpsd_8c.html
+
+display
+https://learn.adafruit.com/touch-pi-portable-raspberry-pi/
+
+adafruit pitft 3.5 blank screen
+http://forums.adafruit.com/viewtopic.php?f=47&t=68952
+http://forums.adafruit.com/viewtopic.php?f=47&t=60878

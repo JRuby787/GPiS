@@ -129,7 +129,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // create new position source and start position updates
     m_positionSource = new PositionSource(this);
     connect(m_positionSource, SIGNAL(positionUpdated(QGeoPositionInfo)), this, SLOT(positionUpdated(QGeoPositionInfo)));
-    m_positionSource->setUpdateInterval(5000);
+    m_positionSource->setUpdateInterval(1000);
     m_positionSource->startUpdates();
 }
 

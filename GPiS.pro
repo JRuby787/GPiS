@@ -7,6 +7,8 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 RCC_DIR = qrc
 
+LIBS    += -lgps
+
 SOURCES += src/main.cpp \
            src/mapwidget.cpp \
            src/mainwindow.cpp \

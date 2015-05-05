@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
     savePixmap.load(":/save-icon.png");
     m_savePosButton->setIcon(QIcon(savePixmap));
     m_savePosButton->setIconSize(QSize(60, 60));
-    m_savePosButton->move(width()/2, height()/6);
+    m_savePosButton->move(294, 53);
     connect(m_savePosButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()));
     // return to map view button
     m_mapButton = new QPushButton(this);
@@ -93,8 +93,19 @@ MainWindow::MainWindow(QWidget *parent) :
     mapPixmap.load(":/map-icon.png");
     m_mapButton->setIcon(QIcon(mapPixmap));
     m_mapButton->setIconSize(QSize(60, 60));
-    m_mapButton->move(width()/6, height()/6);
+    m_mapButton->move(107, 53);
     connect(m_mapButton, SIGNAL(clicked()), this, SLOT(mapButtonClicked()));
+    
+    // quit button
+    m_quitButton = new QPushButton(this);
+    m_quitButton->setVisible(false); 
+    m_quitButton->resize(80, 80); 
+    QPixmap quitPixmap;
+    quitPixmap.load(":/quit-icon.png");
+    m_quitButton->setIcon(QIcon(quitPixmap));
+    m_quitButton->setIconSize(QSize(60, 60));
+    m_quitButton->move(107, 186);
+    connect(m_quitButton, SIGNAL(clicked()), this, SLOT(quitButtonClicked()));
 
     // set Internet Access Point
     QNetworkConfigurationManager manager;
@@ -238,6 +249,7 @@ void MainWindow::showMenu()
     // show the menu
     m_savePosButton->setVisible(true); 
     m_mapButton->setVisible(true); 
+    m_quitButton->setVisible(true); 
 }
 
 void MainWindow::mapButtonClicked()
@@ -264,6 +276,7 @@ void MainWindow::closeMenu()
     // hide the menu
     m_savePosButton->setVisible(false); 
     m_mapButton->setVisible(false); 
+    m_quitButton->setVisible(false); 
 }
 
 void MainWindow::saveButtonClicked()
@@ -278,6 +291,11 @@ void MainWindow::goToButtonClicked()
     {
         m_mapWidget->setCenter(m_currPosition.coordinate());
     }
+}
+
+void MainWindow::quitButtonClicked()
+{
+    close();
 }
 
 void MainWindow::saveCurrentPosition()

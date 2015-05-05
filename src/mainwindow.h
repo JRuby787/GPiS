@@ -48,6 +48,7 @@ private slots:
     void mapButtonClicked();
     void saveButtonClicked();
     void goToButtonClicked();
+    void quitButtonClicked();
     void mapCenterChanged();
     void positionUpdated(const QGeoPositionInfo &info);
     void setMapPanMode();
@@ -68,6 +69,7 @@ private:
 
     QPushButton *m_savePosButton;
     QPushButton *m_mapButton;
+    QPushButton *m_quitButton;
 
     QGraphicsPixmapItem *m_pinIndicator;
 

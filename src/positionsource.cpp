@@ -54,12 +54,9 @@ void PositionSource::requestUpdate(int /*timeout*/)
 void PositionSource::readNextPosition()
 {
     if ((newData = gps_rec.read()) == NULL) {
-        qWarning()  << "gps read error.";
-        exit(1);
+        qWarning()  << "GPS read error.";
     }
-
-    if (newData->online) {
-
+    else if (newData->online) {
         double latitude = newData->fix.latitude;
         double longitude = newData->fix.longitude;
 

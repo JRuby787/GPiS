@@ -30,12 +30,8 @@ private slots:
     void readNextPosition();
 
 private:
-    double degToRad(double deg);
-    double getGroundSpeed(QGeoPositionInfo &info);
-    double haversin(double angle);
     QTimer *timer;
     QGeoPositionInfo lastPosition;
-    bool lastPositionValid;
 
     gpsmm gps_rec;
     struct gps_data_t* newData;

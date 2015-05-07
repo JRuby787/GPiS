@@ -9,6 +9,9 @@ RCC_DIR = qrc
 
 LIBS    += -lgps
 
+# uncomment the DEFINES line to enable rotation
+#DEFINES += ENABLE_ROTATION
+
 SOURCES += src/main.cpp \
            src/mapwidget.cpp \
            src/mainwindow.cpp \

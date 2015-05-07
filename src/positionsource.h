@@ -2,10 +2,11 @@
 #define POSITIONSOURCE_H
 
 #include <qgeopositioninfosource.h>
+#include <gps.h>
+#include <libgpsmm.h>
 
 QTM_USE_NAMESPACE
 
-class QFile;
 class QTimer;
 
 class PositionSource : public QGeoPositionInfoSource
@@ -29,13 +30,11 @@ private slots:
     void readNextPosition();
 
 private:
-    double degToRad(double deg);
-    double getGroundSpeed(QGeoPositionInfo &info);
-    double haversin(double angle);
-    QFile *logFile;
     QTimer *timer;
     QGeoPositionInfo lastPosition;
-    bool lastPositionValid;
+
+    gpsmm gps_rec;
+    struct gps_data_t* newData;
 };
 
 #endif

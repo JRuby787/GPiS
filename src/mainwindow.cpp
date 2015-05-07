@@ -129,7 +129,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // create new position source and start position updates
     m_positionSource = new PositionSource(this);
     connect(m_positionSource, SIGNAL(positionUpdated(QGeoPositionInfo)), this, SLOT(positionUpdated(QGeoPositionInfo)));
-    m_positionSource->setUpdateInterval(5000);
+    m_positionSource->setUpdateInterval(100);
     m_positionSource->startUpdates();
 }
 
@@ -218,6 +218,10 @@ void MainWindow::setupMap()
     m_qgv->scene()->addItem(m_mapWidget);
     m_mapWidget->setCenter(QGeoCoordinate(40.74445,-74.02580));
     m_mapWidget->setZoomLevel(15); // valid levels: 0 (min) to 18 (max)
+#ifdef ENABLE_ROTATION
+    m_qgv->resize(480, 320);
+    m_mapWidget->setTransformOriginPoint(240, 160);
+#endif // ENABLE_ROTATION
     connect(m_mapWidget, SIGNAL(centerChanged(const QGeoCoordinate)), this, SLOT(mapCenterChanged()));
     connect(m_mapWidget, SIGNAL(mapPanMode()), this, SLOT(setMapPanMode()));
 
@@ -382,6 +386,14 @@ void MainWindow::positionUpdated(const QGeoPositionInfo &info)
     {
         m_speedLabel->setText("<b>" + QString::number(mpsToMPH(info.attribute(QGeoPositionInfo::GroundSpeed)), 'f', 1) + " MPH</b>");
     }
+
+#ifdef ENABLE_ROTATION
+    // update the heading/direction
+    if (info.hasAttribute(QGeoPositionInfo::Direction))
+    {
+        m_mapWidget->setRotation(info.attribute(QGeoPositionInfo::Direction));
+    }
+#endif ENABLE_ROTATION
 }
 
 double MainWindow::mpsToMPH(double mps)

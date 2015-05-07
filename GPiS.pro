@@ -7,6 +7,11 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 RCC_DIR = qrc
 
+LIBS    += -lgps
+
+# uncomment the DEFINES line to enable rotation
+#DEFINES += ENABLE_ROTATION
+
 SOURCES += src/main.cpp \
            src/mapwidget.cpp \
            src/mainwindow.cpp \
